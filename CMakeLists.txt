@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 # Project name
-project(pa5)
+project(pa6)
 
 # Build for C++14
 set(CMAKE_CXX_STANDARD 14)
