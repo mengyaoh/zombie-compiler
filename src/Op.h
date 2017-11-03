@@ -9,8 +9,8 @@ class Op
 {
 public:
 	Op(const wchar_t* OpName, int parameter)
-		: mOpName(OpName)
-		, mParam(parameter)
+		: mParam(parameter)
+		, mOpName(OpName)
 	{ }
 
 	void DebugOutput(MachineState& state);

@@ -22,9 +22,9 @@ wxEND_EVENT_TABLE()
 
 ZomFrame::ZomFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame(nullptr, wxID_ANY, title, pos, size)
-, mIsActive(false)
 , mPanel(nullptr)
 , mSimMenu(nullptr)
+, mIsActive(false)
 {
 	// File menu
 	wxMenu* menuFile = new wxMenu;
