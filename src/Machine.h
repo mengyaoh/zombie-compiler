@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <iostream>
 #include "Op.h"
 #include "Exceptions.h"
 #ifdef _MSC_VER
@@ -16,6 +17,8 @@
 struct MachineState
 {
 	// Friend Machine so BindState works
+    // Machine can use Machinestate's private
+    // one Machine for all zombie, one machinesate for each zombie
 	template <typename MachineTraits>
 	friend class Machine;
 	
@@ -25,6 +28,7 @@ struct MachineState
 		, mActionsTaken(0)
 		, mFacing(UP)
 		, mTest(false)
+        , mX(0),mY(0)
 	{
 	}
 
@@ -39,6 +43,8 @@ struct MachineState
 
 	int GetActionsPerTurn() const throw() { return mActionsPerTurn; }
 	bool GetInfect() const throw() { return mInfectOnAttack; }
+    int mX;
+    int mY;
 private:
 	// Data which is set by the traits
 	int mActionsPerTurn = 0;
@@ -81,14 +87,57 @@ template <typename MachineTraits>
 void Machine<MachineTraits>::LoadMachine(const std::string& filename)
 {
 	// TEMP CODE: Add your parsing code here!
-	mOps.clear();
-	mOps.push_back(std::make_unique<OpRotate>(0));
-	mOps.push_back(std::make_unique<OpRotate>(0));
-	mOps.push_back(std::make_unique<OpRotate>(1));
-	mOps.push_back(std::make_unique<OpGoto>(1));
+//    mOps.clear();
+//    mOps.push_back(std::make_unique<OpRotate>(0));
+//    mOps.push_back(std::make_unique<OpRotate>(0));
+//    mOps.push_back(std::make_unique<OpRotate>(1));
+//    mOps.push_back(std::make_unique<OpGoto>(1));
 	// END TEMP CODE
+    std::ifstream file (filename);
+    if(file.is_open()){
+        std::string op;
+        while (!file.eof()){
+            std::getline(file, op);
+            std::size_t semicolonIndex = op.find(";");
+            std::size_t commaIndex = op.find(",");
+            int param=0;
+            std::string comment;
+            if(semicolonIndex!= std::string::npos){
+                comment = op.substr(semicolonIndex+2);
+                op.erase(semicolonIndex, comment.length()+2);
+            }
+            
+            if(commaIndex!= std::string::npos){
+                param = std::stoi(op.substr(commaIndex + 1));
+                op.erase(commaIndex, op.length() - commaIndex);
+            }
+            op.erase(remove_if(op.begin(), op.end(), isspace), op.end());
+            std::cout<<op<<param<<comment<<"\n";
+            if(op == "goto" ){
+                 mOps.push_back(std::make_unique<OpGoto>(param));
+            }
+            if(op == "rotate" ){
+                mOps.push_back(std::make_unique<OpRotate>(param));
+            }
+            else if( op == "forward"){
+                mOps.push_back(std::make_unique<OpForward>());
+            }
+            
+            else if( op == "je"){
+                mOps.push_back(std::make_unique<OpJe>(param));
+            }
+            else if( op == "test_wall"){
+                mOps.push_back(std::make_unique<OpTest_wall>());
+            }
+            else if( op == "test_random"){
+                mOps.push_back(std::make_unique<OpTest_random>());
+            }
+        }
+    }
+    
 }
 
+//bind machinestate to zombie/human machine
 template <typename MachineTraits>
 void Machine<MachineTraits>::BindState(MachineState& state)
 {
@@ -100,9 +149,11 @@ template <typename MachineTraits>
 void Machine<MachineTraits>::TakeTurn(MachineState& state)
 {
 	wxLogDebug("TAKING TURN");
+    std::cout<<mOps.size()<<"\n";
 	state.mActionsTaken = 0;
 	while (state.mActionsTaken < MachineTraits::ACTIONS_PER_TURN)
 	{
+        std::cout<<state.mProgramCounter<<"\n";
 		mOps.at(state.mProgramCounter - 1)->Execute(state);
 	}
 }

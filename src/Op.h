@@ -43,3 +43,41 @@ struct OpGoto : Op
 
 	void Execute(MachineState& state) override;
 };
+
+struct OpForward : Op
+{
+    OpForward()
+        : Op(L"OpForward", 0)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
+
+struct OpJe : Op
+{
+    OpJe(int parameter)
+    : Op(L"OpJe", parameter)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
+
+struct OpTest_wall : Op
+{
+    OpTest_wall()
+    : Op(L"OpTest_wall",0)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
+
+struct OpTest_random : Op
+{
+    OpTest_random()
+    : Op(L"Test_random",0)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
+
+

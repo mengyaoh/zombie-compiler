@@ -8,6 +8,7 @@ set(HEADER_FILES
 	ZomApp.h
 	ZomDrawPanel.h
 	ZomFrame.h
+	World.hpp
 )
 
 set(SOURCE_FILES
@@ -15,6 +16,7 @@ set(SOURCE_FILES
 	ZomApp.cpp
 	ZomDrawPanel.cpp
 	ZomFrame.cpp
+	World.cpp
 )
 
 # Don't change this
