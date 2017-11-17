@@ -80,5 +80,21 @@ struct OpTest_random : Op
     
     virtual void Execute(MachineState& state) override;
 };
+struct OpTest_Human : Op
+{
+    OpTest_Human()
+    : Op(L"Test_Human",0)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
+struct OpTest_Zombie : Op
+{
+    OpTest_Zombie()
+    : Op(L"Test_random",0)
+    { }
+    
+    virtual void Execute(MachineState& state) override;
+};
 
 

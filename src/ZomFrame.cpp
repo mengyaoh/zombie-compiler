@@ -7,7 +7,7 @@
 #include <wx/filedlg.h>
 #include "ZomDrawPanel.h"
 #include <memory>
-
+#include <algorithm>
 enum
 {
 	ID_SIM_START = 1000,
