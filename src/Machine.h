@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Op.h"
 #include "Exceptions.h"
+#include <algorithm>
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
 #endif
