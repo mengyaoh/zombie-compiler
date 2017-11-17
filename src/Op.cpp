@@ -4,7 +4,8 @@
 #pragma warning(disable : 4996)
 #endif
 #include <wx/log.h>
-
+#include <time.h>
+#include "World.hpp"
 // Output state information for debugging purposes
 void Op::DebugOutput(MachineState& state)
 {
@@ -71,21 +72,23 @@ void OpGoto::Execute(MachineState& state)
 void OpForward::Execute(MachineState& state)
 {
     DebugOutput(state);
-    switch (state.mFacing)
-    {
-        case (MachineState::UP) :
-            state.mY--;
-            break;
-        case (MachineState::RIGHT) :
-            state.mX++;
-            break;
-        case (MachineState::DOWN) :
-            state.mY++;
-            break;
-        default:
-        case (MachineState::LEFT) :
-            state.mX--;
-            break;
+    if(CanMove(state)){
+        switch (state.mFacing)
+        {
+            case (MachineState::UP) :
+                state.mY--;
+                break;
+            case (MachineState::RIGHT) :
+                state.mX++;
+                break;
+            case (MachineState::DOWN) :
+                state.mY++;
+                break;
+            default:
+            case (MachineState::LEFT) :
+                state.mX--;
+                break;
+        }
     }
     state.mProgramCounter++;
     state.mActionsTaken++;
@@ -151,5 +154,28 @@ void OpTest_wall::Execute(MachineState& state)
 void OpTest_random::Execute(MachineState& state)
 {
     DebugOutput(state);
+    srand( time(NULL) );
+    int randNum = rand() % 2;
+    //std::cout<<randNum<<"\n";
+    state.mTest = static_cast<bool>(randNum);
     state.mProgramCounter++;
+}
+
+bool Op::CanMove(MachineState& state){
+    switch (state.mFacing)
+    {
+        case (MachineState::UP) :
+            return(state.mY != 0 && World::Get().FindStateAt(state.mX, state.mY-1)==nullptr);
+            break;
+        case (MachineState::RIGHT) :
+            return(state.mX != 19 && World::Get().FindStateAt(state.mX + 1, state.mY)==nullptr);
+            break;
+        case (MachineState::DOWN) :
+            return(state.mY != 19 && World::Get().FindStateAt(state.mX, state.mY + 1)==nullptr);
+            break;
+        default:
+        case (MachineState::LEFT) :
+            return(state.mX != 0 && World::Get().FindStateAt(state.mX - 1, state.mY)==nullptr);
+            break;
+    }
 }

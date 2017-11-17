@@ -26,7 +26,7 @@ struct MachineState
 	MachineState()
 		: mProgramCounter(1)
 		, mActionsTaken(0)
-		, mFacing(UP)
+		, mFacing(DOWN)
 		, mTest(false)
         , mX(0),mY(0)
 	{
@@ -87,7 +87,7 @@ template <typename MachineTraits>
 void Machine<MachineTraits>::LoadMachine(const std::string& filename)
 {
 	// TEMP CODE: Add your parsing code here!
-//    mOps.clear();
+    mOps.clear();
 //    mOps.push_back(std::make_unique<OpRotate>(0));
 //    mOps.push_back(std::make_unique<OpRotate>(0));
 //    mOps.push_back(std::make_unique<OpRotate>(1));
@@ -111,8 +111,8 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
                 param = std::stoi(op.substr(commaIndex + 1));
                 op.erase(commaIndex, op.length() - commaIndex);
             }
-            op.erase(remove_if(op.begin(), op.end(), isspace), op.end());
-            std::cout<<op<<param<<comment<<"\n";
+            op.erase(std::remove_if(op.begin(), op.end(), isspace), op.end());
+            //std::cout<<op<<param<<comment<<"\n";
             if(op == "goto" ){
                  mOps.push_back(std::make_unique<OpGoto>(param));
             }
@@ -149,11 +149,11 @@ template <typename MachineTraits>
 void Machine<MachineTraits>::TakeTurn(MachineState& state)
 {
 	wxLogDebug("TAKING TURN");
-    std::cout<<mOps.size()<<"\n";
+    //std::cout<<mOps.size()<<"\n";
 	state.mActionsTaken = 0;
 	while (state.mActionsTaken < MachineTraits::ACTIONS_PER_TURN)
 	{
-        std::cout<<state.mProgramCounter<<"\n";
+        //std::cout<<state.mProgramCounter<<"\n";
 		mOps.at(state.mProgramCounter - 1)->Execute(state);
 	}
 }

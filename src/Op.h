@@ -19,6 +19,7 @@ public:
 protected:
 	int mParam;
 	const wchar_t* mOpName;
+    bool CanMove(MachineState& state);
 };
 
 // Defines the rotate operation

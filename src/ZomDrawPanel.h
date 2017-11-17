@@ -3,7 +3,7 @@
 #include <wx/panel.h>
 #include <wx/frame.h>
 #include <string>
-
+#include "World.hpp"
 class ZomDrawPanel : public wxPanel
 {
  
