@@ -8,7 +8,7 @@
 #include <iostream>
 #include "Op.h"
 #include "Exceptions.h"
-#include <algorithm>
+//#include <algorithm>
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
 #endif
@@ -112,7 +112,7 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
                 param = std::stoi(op.substr(commaIndex + 1));
                 op.erase(commaIndex, op.length() - commaIndex);
             }
-            op.erase(std::remove_if(op.begin(), op.end(), isspace), op.end());
+            //op.erase(std::remove_if(op.begin(), op.end(), isspace), op.end());
             //std::cout<<op<<param<<comment<<"\n";
             if(op == "goto" ){
                  mOps.push_back(std::make_unique<OpGoto>(param));
