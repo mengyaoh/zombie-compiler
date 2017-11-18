@@ -156,6 +156,9 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
             else if( op == "ranged_attack"){
                 mOps.push_back(std::make_unique<OpRangeAttack>());
             }
+            else if( op == "jne"){
+                mOps.push_back(std::make_unique<OpJne>(param));
+            }
         }
     }
     

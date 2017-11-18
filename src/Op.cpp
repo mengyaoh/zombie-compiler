@@ -106,6 +106,18 @@ void OpJe::Execute(MachineState& state)
     }
 }
 
+void OpJne::Execute(MachineState& state)
+{
+    DebugOutput(state);
+    if (!state.mTest){
+        state.mProgramCounter = mParam;
+        
+    }else{
+        state.mProgramCounter++;
+        
+    }
+}
+
 void OpTestWall::Execute(MachineState& state)
 {
     DebugOutput(state);

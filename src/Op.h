@@ -64,6 +64,15 @@ struct OpJe : Op
     void Execute(MachineState& state) override;
 };
 
+struct OpJne : Op
+{
+    OpJne(int parameter)
+    : Op(L"OpJne", parameter)
+    { }
+    
+    void Execute(MachineState& state) override;
+};
+
 struct OpTestWall : Op
 {
     OpTestWall()

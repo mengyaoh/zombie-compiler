@@ -93,6 +93,8 @@ void ZomFrame::OnNew(wxCommandEvent& event)
     mSimMenu->Enable(ID_SIM_START, false);
     mSimMenu->Enable(ID_RESET, false);
     mSimMenu->Enable(ID_RANDOMIZE, false);
+    mLoadedhuman =false;
+    mLoadedzombie=false;
     mPanel->PaintNow();
 }
 
