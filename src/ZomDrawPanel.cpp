@@ -9,7 +9,9 @@ END_EVENT_TABLE()
 ZomDrawPanel::ZomDrawPanel(wxFrame* parent)
 : wxPanel(parent)
 {
-	
+    mMonth=0;
+    mZombieMachine="";
+    mHumanMachine="";
 }
 
 void ZomDrawPanel::PaintEvent(wxPaintEvent & evt)
@@ -134,7 +136,7 @@ void ZomDrawPanel::DrawMessage(wxDC& dc)
     
     dc.SetTextForeground(*wxGREEN);
     wxString human = "Human Machine: ";
-    human.Append(mhumanMachine);
+    human.Append(mHumanMachine);
     human.Append("\nAlive: ");
     human.Append(std::to_string(World::Get().GetHuman().size()));
     dc.DrawText(human, 640, 110);

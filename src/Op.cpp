@@ -222,10 +222,10 @@ void OpEndTurn::Execute(MachineState& state)
 {
     DebugOutput(state);
     if (state.GetInfect()){
-        state.mActionsTaken = 10;
+        state.mActionsTaken = 1;
     }
     else {
-        state.mActionsTaken = 20;
+        state.mActionsTaken = 2;
     }
     state.mProgramCounter++;
 }
@@ -237,20 +237,20 @@ void OpAttack::Execute(MachineState& state)
     //if nothing in front
     if(toattact==nullptr){
         if (state.GetInfect()){
-            state.mActionsTaken = 2;
+            state.mActionsTaken = 1;
         }
         else {
-            state.mActionsTaken = 3;
+            state.mActionsTaken = 2;
         }
-        state.mProgramCounter++;
-        return;
     }
     //human kill zombie
     else if(!state.GetInfect()&&toattact->GetInfect()){
         //Iter: pointer to the share pointer of machinestate
         for (auto iter = World::Get().GetZombie().begin(); iter != World::Get().GetZombie().end(); iter++){
             if (*iter == toattact){
+                std::cout<<"before"<<World::Get().GetZombie().size()<<std::endl;
                 World::Get().GetZombie().erase(iter);
+                std::cout<<"after"<<World::Get().GetZombie().size()<<std::endl;
                 break;
             }
         }
@@ -292,17 +292,15 @@ void OpRangeAttack::Execute(MachineState& state)
     }catch(RangeAttackException ex){
         ex.what();
     }
-    std::shared_ptr<MachineState> toattact = World::Get().FindStateAtFront(state.mX, state.mY,mParam);
+    std::shared_ptr<MachineState> toattact = World::Get().FindStateAtFront(state.mX, state.mY,2);
     //if nothing in front
     if(toattact==nullptr){
         if (state.GetInfect()){
-            state.mActionsTaken = 2;
+            state.mActionsTaken = 1;
         }
         else {
-            state.mActionsTaken = 3;
+            state.mActionsTaken = 2;
         }
-        state.mProgramCounter++;
-        return;
     }
     //human kill zombie
     else if(!state.GetInfect()&&toattact->GetInfect()){
@@ -324,18 +322,6 @@ void OpRangeAttack::Execute(MachineState& state)
         }
     }
     //zombie kill human
-    else if(state.GetInfect()&&!toattact->GetInfect()){
-        for (auto iter = World::Get().GetHuman().begin(); iter != World::Get().GetHuman().end(); iter++){
-            if (*iter == toattact){
-                World::Get().GetHuman().erase(iter);
-                break;
-            }
-        }
-        //std::cout<<"before"<<toattact->mProgramCounter<<std::endl;
-        World::Get().GetMyZombieMachine().BindState(*toattact);
-        //std::cout<<toattact->mProgramCounter<<std::endl;
-        World::Get().GetZombie().push_back(toattact);
-    }
     state.mProgramCounter++;
     state.mActionsTaken++;
 }

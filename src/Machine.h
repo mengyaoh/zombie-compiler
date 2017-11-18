@@ -176,22 +176,30 @@ void Machine<MachineTraits>::TakeTurn(MachineState& state)
 	wxLogDebug("TAKING TURN");
     //std::cout<<mOps.size()<<"\n";
 	state.mActionsTaken = 0;
+    int times =0;
 	while (state.mActionsTaken < MachineTraits::ACTIONS_PER_TURN)
 	{
         //std::cout<<state.mProgramCounter<<"\n";
         try{
-            if(mOps.size()==0){
+            if(mOps.empty()){
                 throw MachineLoadException();
             }
-            else if(mOps.size()!=0 && (state.mProgramCounter - 1<0||state.mProgramCounter - 1>= mOps.size())){
+            else if(!mOps.empty() && (state.mProgramCounter - 1<0||state.mProgramCounter - 1>= mOps.size())){
                 throw InvalidOp();
             }
             mOps.at(state.mProgramCounter - 1)->Execute(state);
+            times++;
+            if(times>=80){
+                state.mActionsTaken++;
+            }
         }catch(MachineLoadException ex){
             wxMessageBox("please Load Machine for both Human & Zombie.", "Error", wxOK | wxICON_ERROR);
             exit(-1);
         }catch (InvalidOp ex){
             wxMessageBox("Invalid OP code or parameters.", "Error", wxOK | wxICON_ERROR);
+            exit(-1);
+        }catch(LoopOperationException ex){
+            wxMessageBox("A infinite loop of operation has occurred.", "Error", wxOK | wxICON_ERROR);
             exit(-1);
         }
 	}

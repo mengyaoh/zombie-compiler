@@ -68,8 +68,8 @@ ZomFrame::ZomFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	// TEMP CODE: Initialize zombie test machine
 	//mZombieMachine.LoadMachine("zom/basic_movement.zom");
 		// END TEMP CODE
-    mloadedhuman =false;
-    mloadedzombie=false;
+    mLoadedhuman =false;
+    mLoadedzombie=false;
     mSimMenu->Enable(ID_SIM_START, false);
     mSimMenu->Enable(ID_RESET, false);
     mSimMenu->Enable(ID_RANDOMIZE, false);
@@ -88,6 +88,11 @@ void ZomFrame::OnNew(wxCommandEvent& event)
     mPanel->mMonth = 0;
     World::Get().GetMyHumanMachine().ClearLoad();
     World::Get().GetMyZombieMachine().ClearLoad();
+    mPanel->mHumanMachine="";
+    mPanel->mZombieMachine="";
+    mSimMenu->Enable(ID_SIM_START, false);
+    mSimMenu->Enable(ID_RESET, false);
+    mSimMenu->Enable(ID_RANDOMIZE, false);
     mPanel->PaintNow();
 }
 
@@ -157,8 +162,8 @@ void ZomFrame::OnLoadZombie(wxCommandEvent& event)
     {
         wxMessageBox("Error loading file", "Error", wxOK | wxICON_ERROR);
     }
-    mloadedzombie=true;
-    if(mloadedzombie&&mloadedhuman){
+    mLoadedzombie=true;
+    if(mLoadedzombie&&mLoadedhuman){
         mSimMenu->Enable(ID_SIM_START, true);
         mSimMenu->Enable(ID_RESET, true);
         mSimMenu->Enable(ID_RANDOMIZE, true);
@@ -176,7 +181,7 @@ void ZomFrame::OnLoadSurvivor(wxCommandEvent& event)
         {
             std::string fileName = openFileDialog.GetPath().ToStdString();
             World::Get().GetMyHumanMachine().LoadMachine(fileName);
-            mPanel->mhumanMachine = fileName;
+            mPanel->mHumanMachine = fileName;
             //mHumanMachine.BindState(mZombieTestState);
             //World::Get().AddZombie(std::make_shared<MachineState>(mZombieTestState));
         }
@@ -187,8 +192,8 @@ void ZomFrame::OnLoadSurvivor(wxCommandEvent& event)
     {
         wxMessageBox("Error loading file", "Error", wxOK | wxICON_ERROR);
     }
-    mloadedhuman =true;
-    if(mloadedzombie&&mloadedhuman){
+    mLoadedhuman =true;
+    if(mLoadedzombie&&mLoadedhuman){
         mSimMenu->Enable(ID_SIM_START, true);
         mSimMenu->Enable(ID_RESET, true);
         mSimMenu->Enable(ID_RANDOMIZE, true);

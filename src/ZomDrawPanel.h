@@ -21,6 +21,6 @@ protected:
 public:
     int mMonth;
     std::string mZombieMachine;
-    std::string mhumanMachine;
+    std::string mHumanMachine;
 };
 

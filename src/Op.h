@@ -119,7 +119,7 @@ struct OpEndTurn : Op
 struct OpAttack : Op
 {
     OpAttack()
-    : Op(L"OpAttack",0)
+    : Op(L"OpAttack",1)
     { }
     
     void Execute(MachineState& state) override;
@@ -128,7 +128,7 @@ struct OpAttack : Op
 struct OpRangeAttack : Op
 {
     OpRangeAttack()
-    : Op(L"OpRangeAttack",0)
+    : Op(L"OpRangeAttack",2)
     { }
     
     void Execute(MachineState& state) override;

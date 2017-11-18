@@ -25,4 +25,9 @@ public:
     const char* what() const noexcept override { return "please Load Machine for both Human & Zombie."; }
 };
 
+class LoopOperationException : public std::exception
+{
+public:
+    const char* what() const noexcept override { return "please Load Machine for both Human & Zombie."; }
+};
 

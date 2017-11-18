@@ -37,7 +37,7 @@ private:
     //World mWorld;
 	
 	bool mIsActive;
-    bool mloadedzombie;
-    bool mloadedhuman;
+    bool mLoadedzombie;
+    bool mLoadedhuman;
     
 };

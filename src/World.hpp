@@ -8,7 +8,7 @@
 #ifndef World_hpp
 #define World_hpp
 //#define DECLARE_SINGLETON(World) friend class Singleton<World>;
-#include <stdio.h>
+#include <cstdio>
 #include "Singleton.h"
 #include "Machine.h"
 #include "Traits.h"
