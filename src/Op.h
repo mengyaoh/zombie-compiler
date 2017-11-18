@@ -16,11 +16,11 @@ public:
 	void DebugOutput(MachineState& state);
 
 	virtual void Execute(MachineState& state) = 0;
+    
 protected:
 	int mParam;
 	const wchar_t* mOpName;
     bool CanMove(MachineState& state);
-    
 };
 
 // Defines the rotate operation
