@@ -8,7 +8,7 @@
 #ifndef World_hpp
 #define World_hpp
 //#define DECLARE_SINGLETON(World) friend class Singleton<World>;
-#include <stdio.h>
+#include <cstdio>
 #include "Singleton.h"
 #include "Machine.h"
 class World: public Singleton<World> {
@@ -18,6 +18,7 @@ public:
     std::vector<std::shared_ptr<MachineState>>& GetZombie (){return mZombies;}
     std::vector<std::shared_ptr<MachineState>>& GetHuman (){return mHumans; }
     std::shared_ptr<MachineState> FindStateAt(int x, int y);
+    std::shared_ptr<MachineState> FindStateAtFront(int x, int y, int f);
 private:
     std::vector<std::shared_ptr<MachineState>> mZombies;
     std::vector<std::shared_ptr<MachineState>> mHumans;

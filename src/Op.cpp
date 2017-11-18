@@ -4,7 +4,7 @@
 #pragma warning(disable : 4996)
 #endif
 #include <wx/log.h>
-#include <time.h>
+#include <ctime>
 #include "World.hpp"
 // Output state information for debugging purposes
 void Op::DebugOutput(MachineState& state)
@@ -106,7 +106,7 @@ void OpJe::Execute(MachineState& state)
     }
 }
 
-void OpTest_wall::Execute(MachineState& state)
+void OpTestWall::Execute(MachineState& state)
 {
     DebugOutput(state);
     switch (state.mFacing)
@@ -151,10 +151,10 @@ void OpTest_wall::Execute(MachineState& state)
     state.mProgramCounter++;
 }
 
-void OpTest_random::Execute(MachineState& state)
+void OpTestRandom::Execute(MachineState& state)
 {
     DebugOutput(state);
-    srand( time(NULL) );
+    srand( time(nullptr) );
     int randNum = rand() % 2;
     //std::cout<<randNum<<"\n";
     state.mTest = static_cast<bool>(randNum);
@@ -178,4 +178,43 @@ bool Op::CanMove(MachineState& state){
             return(state.mX != 0 && World::Get().FindStateAt(state.mX - 1, state.mY)==nullptr);
             break;
     }
+}
+
+void OpTestHuman::Execute(MachineState& state)
+{
+    DebugOutput(state);
+    std::shared_ptr<MachineState> ms =World::Get().FindStateAtFront(state.mX, state.mY, mParam);
+    if(ms==nullptr){
+        state.mTest = false;
+    }
+    else if(ms->GetInfect()){
+        state.mTest = false;
+    }
+    else if(!ms->GetInfect()){
+        state.mTest = true;
+    }
+    state.mProgramCounter++;
+}
+
+void OpTestZombie::Execute(MachineState& state)
+{
+    DebugOutput(state);
+    std::shared_ptr<MachineState> ms =World::Get().FindStateAtFront(state.mX, state.mY, mParam);
+    if(ms==nullptr){
+        state.mTest = false;
+    }
+    else if(ms->GetInfect()){
+        state.mTest = true;
+    }
+    else if(!ms->GetInfect()){
+        state.mTest = false;
+    }
+    state.mProgramCounter++;
+}
+
+void OpTestPassable::Execute(MachineState& state)
+{
+    DebugOutput(state);
+    state.mTest = CanMove(state);
+    state.mProgramCounter++;
 }

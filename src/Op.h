@@ -20,6 +20,7 @@ protected:
 	int mParam;
 	const wchar_t* mOpName;
     bool CanMove(MachineState& state);
+    
 };
 
 // Defines the rotate operation
@@ -51,7 +52,7 @@ struct OpForward : Op
         : Op(L"OpForward", 0)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
 };
 
 struct OpJe : Op
@@ -60,41 +61,50 @@ struct OpJe : Op
     : Op(L"OpJe", parameter)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
 };
 
-struct OpTest_wall : Op
+struct OpTestWall : Op
 {
-    OpTest_wall()
+    OpTestWall()
     : Op(L"OpTest_wall",0)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
 };
 
-struct OpTest_random : Op
+struct OpTestRandom : Op
 {
-    OpTest_random()
+    OpTestRandom()
     : Op(L"Test_random",0)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
 };
-struct OpTest_Human : Op
+struct OpTestHuman : Op
 {
-    OpTest_Human()
-    : Op(L"Test_Human",0)
+    OpTestHuman(int parameter)
+    : Op(L"Test_Human",parameter)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
 };
-struct OpTest_Zombie : Op
+struct OpTestZombie : Op
 {
-    OpTest_Zombie()
-    : Op(L"Test_random",0)
+    OpTestZombie(int parameter)
+    : Op(L"Test_Zombie",parameter)
     { }
     
-    virtual void Execute(MachineState& state) override;
+    void Execute(MachineState& state) override;
+};
+
+struct OpTestPassable : Op
+{
+    OpTestPassable()
+    : Op(L"Test_Passable",0)
+    { }
+    
+    void Execute(MachineState& state) override;
 };
 
 

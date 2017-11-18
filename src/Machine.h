@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Op.h"
 #include "Exceptions.h"
+#include <wx/msgdlg.h>
 //#include <algorithm>
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
@@ -128,10 +129,10 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
                 mOps.push_back(std::make_unique<OpJe>(param));
             }
             else if( op == "test_wall"){
-                mOps.push_back(std::make_unique<OpTest_wall>());
+                mOps.push_back(std::make_unique<OpTestWall>());
             }
             else if( op == "test_random"){
-                mOps.push_back(std::make_unique<OpTest_random>());
+                mOps.push_back(std::make_unique<OpTestRandom>());
             }
         }
     }
@@ -155,6 +156,11 @@ void Machine<MachineTraits>::TakeTurn(MachineState& state)
 	while (state.mActionsTaken < MachineTraits::ACTIONS_PER_TURN)
 	{
         //std::cout<<state.mProgramCounter<<"\n";
-		mOps.at(state.mProgramCounter - 1)->Execute(state);
+        try{
+            mOps.at(state.mProgramCounter - 1)->Execute(state);
+        }catch(const std::out_of_range& oor){
+            wxMessageBox("Please Load Machine for both Human and Zombie", "Error", wxOK | wxICON_ERROR);
+            exit(-1);
+        }
 	}
 }

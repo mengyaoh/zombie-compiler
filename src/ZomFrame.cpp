@@ -155,7 +155,7 @@ void ZomFrame::OnRandomize(wxCommandEvent& event)
 {
     World::Get().GetZombie().clear();
     World::Get().GetHuman().clear();
-    srand( time(NULL) );
+    srand( time(nullptr) );
     std::vector<std::pair<int, int>> existedPoint;
     
     for (int i = 0; i < 20; i++) {
