@@ -314,7 +314,7 @@ void OpRangeAttack::Execute(MachineState& state)
             }
         }
     }
-    //human attact human
+    //human kill human
     else if(!state.GetInfect()&&!toattact->GetInfect()){
         for (auto iter = World::Get().GetHuman().begin(); iter != World::Get().GetHuman().end(); iter++){
             if (*iter == toattact){
