@@ -15,6 +15,7 @@ enum
     ID_LOAD_ZOMBIE,
     ID_LOAD_SURVIVOR,
     ID_RANDOMIZE,
+    ID_RESET,
 };
 
 wxBEGIN_EVENT_TABLE(ZomFrame, wxFrame) // NOLINT
@@ -25,6 +26,7 @@ wxBEGIN_EVENT_TABLE(ZomFrame, wxFrame) // NOLINT
     EVT_MENU(ID_LOAD_ZOMBIE, ZomFrame::OnLoadZombie)
     EVT_MENU(ID_LOAD_SURVIVOR, ZomFrame::OnLoadSurvivor)
     EVT_MENU(ID_RANDOMIZE, ZomFrame::OnRandomize)
+    EVT_MENU(ID_RESET, ZomFrame::OnReset)
 wxEND_EVENT_TABLE()
 
 ZomFrame::ZomFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -44,7 +46,8 @@ ZomFrame::ZomFrame(const wxString& title, const wxPoint& pos, const wxSize& size
     mSimMenu->Append(ID_LOAD_ZOMBIE,"Load Zombie");
     mSimMenu->Append(ID_LOAD_SURVIVOR,"Load Human");
     mSimMenu->Append(ID_RANDOMIZE,"Randomize");
-	
+	mSimMenu->Append(ID_RESET, "Reset", "Reset");
+    
     wxMenuBar* menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(mSimMenu, "&Simulation");
@@ -65,6 +68,11 @@ ZomFrame::ZomFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	// TEMP CODE: Initialize zombie test machine
 	//mZombieMachine.LoadMachine("zom/basic_movement.zom");
 		// END TEMP CODE
+    mloadedhuman =false;
+    mloadedzombie=false;
+    mSimMenu->Enable(ID_SIM_START, false);
+    mSimMenu->Enable(ID_RESET, false);
+    mSimMenu->Enable(ID_RANDOMIZE, false);
 }
 
 void ZomFrame::OnExit(wxCommandEvent& event)
@@ -74,8 +82,13 @@ void ZomFrame::OnExit(wxCommandEvent& event)
 
 void ZomFrame::OnNew(wxCommandEvent& event)
 {
-	// TODO: Add code for File>New
-
+    mTurnTimer->Stop();
+    World::Get().GetHuman().clear();
+    World::Get().GetZombie().clear();
+    mPanel->mMonth = 0;
+    World::Get().GetMyHumanMachine().ClearLoad();
+    World::Get().GetMyZombieMachine().ClearLoad();
+    mPanel->PaintNow();
 }
 
 void ZomFrame::OnSimStart(wxCommandEvent& event)
@@ -83,7 +96,7 @@ void ZomFrame::OnSimStart(wxCommandEvent& event)
 	if (!mIsActive)
 	{
 		// Add timer to run once per second
-		mTurnTimer->Start(100);
+		mTurnTimer->Start(1000);
 		mIsActive = true;
 	}
 	else
@@ -95,19 +108,32 @@ void ZomFrame::OnSimStart(wxCommandEvent& event)
 
 void ZomFrame::OnTurnTimer(wxTimerEvent& event)
 {
+    wxString winner;
+    if (World::Get().GetZombie().empty()){
+        winner = "Humans won!";
+    }
+    else if (World::Get().GetHuman().empty()){
+        winner = "Zombies won!";
+    }
+    else{
 	// TEMP CODE: Take turn for zombie machine
-    for(int i = 0; i<World::Get().GetZombie().size();i++){
-        auto ms = World::Get().GetZombie().at(i);
-        mZombieMachine.TakeTurn(*ms);
+        for(int i = 0; i<World::Get().GetZombie().size();i++){
+            auto ms = World::Get().GetZombie().at(i);
+            World::Get().GetMyZombieMachine().TakeTurn(*ms);
+        }
+        
+        //Take turn for human machine
+        for(int i = 0; i<World::Get().GetHuman().size();i++){
+            auto ms = World::Get().GetHuman().at(i);
+            World::Get().GetMyHumanMachine().TakeTurn(*ms);
+        }
+        mPanel->mMonth++;
+        mPanel->PaintNow();
+        return;
+        // END TEMP CODE
     }
-    
-    //Take turn for human machine
-    for(int i = 0; i<World::Get().GetHuman().size();i++){
-        auto ms = World::Get().GetHuman().at(i);
-        mHumanMachine.TakeTurn(*ms);
-    }
-    mPanel->PaintNow();
-	// END TEMP CODE
+    mTurnTimer->Stop();
+    wxMessageBox(winner, "");
 }
 
 void ZomFrame::OnLoadZombie(wxCommandEvent& event)
@@ -119,16 +145,25 @@ void ZomFrame::OnLoadZombie(wxCommandEvent& event)
         if (openFileDialog.ShowModal() == wxID_OK)
         {
             std::string fileName = openFileDialog.GetPath().ToStdString();
-            mZombieMachine.LoadMachine(fileName);
+            World::Get().GetMyZombieMachine().LoadMachine(fileName);
+            mPanel->mZombieMachine = fileName;
             //mZombieMachine.BindState(mZombieTestState);
             //World::Get().AddZombie(std::make_shared<MachineState>(mZombieTestState));
-            mPanel->PaintNow();
+        }
+        else{
+            throw FileLoadException();
         }
     }catch (FileLoadException exception)
     {
         wxMessageBox("Error loading file", "Error", wxOK | wxICON_ERROR);
     }
-    
+    mloadedzombie=true;
+    if(mloadedzombie&&mloadedhuman){
+        mSimMenu->Enable(ID_SIM_START, true);
+        mSimMenu->Enable(ID_RESET, true);
+        mSimMenu->Enable(ID_RANDOMIZE, true);
+    }
+    mPanel->PaintNow();
 }
 
 void ZomFrame::OnLoadSurvivor(wxCommandEvent& event)
@@ -140,15 +175,25 @@ void ZomFrame::OnLoadSurvivor(wxCommandEvent& event)
         if (openFileDialog.ShowModal() == wxID_OK)
         {
             std::string fileName = openFileDialog.GetPath().ToStdString();
-            mHumanMachine.LoadMachine(fileName);
+            World::Get().GetMyHumanMachine().LoadMachine(fileName);
+            mPanel->mhumanMachine = fileName;
             //mHumanMachine.BindState(mZombieTestState);
             //World::Get().AddZombie(std::make_shared<MachineState>(mZombieTestState));
+        }
+        else{
+            throw FileLoadException();
         }
     }catch (FileLoadException exception)
     {
         wxMessageBox("Error loading file", "Error", wxOK | wxICON_ERROR);
     }
-
+    mloadedhuman =true;
+    if(mloadedzombie&&mloadedhuman){
+        mSimMenu->Enable(ID_SIM_START, true);
+        mSimMenu->Enable(ID_RESET, true);
+        mSimMenu->Enable(ID_RANDOMIZE, true);
+    }
+    mPanel->PaintNow();
 }
 
 void ZomFrame::OnRandomize(wxCommandEvent& event)
@@ -160,17 +205,15 @@ void ZomFrame::OnRandomize(wxCommandEvent& event)
     
     for (int i = 0; i < 20; i++) {
         MachineState zombie;
-        int x = rand() % 20;
-        int y = rand() % 20;
-        auto point = std::make_pair(x, y);
+        zombie.mX= rand() % 20;
+        zombie.mY = rand() % 20;
+        auto point = std::make_pair(zombie.mX, zombie.mY);
         while(std::find(existedPoint.begin(), existedPoint.end(), point) != existedPoint.end()){
-            x = rand() % 20;
-            y = rand() % 20;
-            point = std::make_pair(x, y);
+            zombie.mX = rand() % 20;
+            zombie.mY = rand() % 20;
+            point = std::make_pair(zombie.mX, zombie.mY);
         }
         existedPoint.push_back(point);
-        zombie.mX = x;
-        zombie.mY = y;
         int facing = rand() % 4;
         switch (facing) {
             case 0:
@@ -186,22 +229,20 @@ void ZomFrame::OnRandomize(wxCommandEvent& event)
                 zombie.mFacing = MachineState::RIGHT;
                 break;
         }
-        mZombieMachine.BindState(zombie);
+        World::Get().GetMyZombieMachine().BindState(zombie);
         World::Get().AddZombie(std::make_shared<MachineState>(zombie));
     }
     for (int i = 0; i < 10; i++) {
         MachineState human;
-        int x = rand() % 20;
-        int y = rand() % 20;
-        auto point = std::make_pair(x, y);
+        human.mX = rand() % 20;
+        human.mY = rand() % 20;
+        auto point = std::make_pair(human.mX, human.mY);
         while(std::find(existedPoint.begin(), existedPoint.end(), point) != existedPoint.end()){
-            x = rand() % 20;
-            y = rand() % 20;;
-            point = std::make_pair(x, y);
+            human.mX = rand() % 20;
+            human.mY = rand() % 20;;
+            point = std::make_pair(human.mX, human.mY);
         }
         existedPoint.push_back(point);
-        human.mX = x;
-        human.mY = y;
         int facing = rand() % 4;
         switch (facing) {
             case 0:
@@ -217,9 +258,20 @@ void ZomFrame::OnRandomize(wxCommandEvent& event)
                 human.mFacing = MachineState::RIGHT;
                 break;
         }
-        mHumanMachine.BindState(human);
+        World::Get().GetMyHumanMachine().BindState(human);
         World::Get().AddHuman(std::make_shared<MachineState>(human));
     }
     mPanel->PaintNow();
 }
+
+void ZomFrame::OnReset(wxCommandEvent& event)
+{
+    mTurnTimer->Stop();
+    World::Get().GetHuman().clear();
+    World::Get().GetZombie().clear();
+    mPanel->mMonth = 0;
+    mPanel->PaintNow();
+    
+}
+
 

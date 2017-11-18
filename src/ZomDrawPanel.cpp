@@ -32,6 +32,7 @@ void ZomDrawPanel::Render(wxDC& dc)
 	
 	// Draw the grid
 	DrawGrid(dc);
+    DrawMessage(dc);
 }
 
 void ZomDrawPanel::DrawGrid(wxDC& dc)
@@ -120,6 +121,29 @@ void ZomDrawPanel::DrawGrid(wxDC& dc)
         dc.SetBrush(*wxGREEN_BRUSH);
         dc.DrawPolygon(3, list);
     }
+}
+
+void ZomDrawPanel::DrawMessage(wxDC& dc)
+{
+    dc.SetTextForeground(*wxRED);
+    wxString text1 = "Zombie Machine: ";
+    text1.Append(mZombieMachine);
+    text1.Append("\nAlive: ");
+    text1.Append(std::to_string(World::Get().GetZombie().size()));
+    dc.DrawText(text1, 640, 10);
+    
+    dc.SetTextForeground(*wxGREEN);
+    wxString human = "Human Machine: ";
+    human.Append(mhumanMachine);
+    human.Append("\nAlive: ");
+    human.Append(std::to_string(World::Get().GetHuman().size()));
+    dc.DrawText(human, 640, 110);
+    
+    dc.SetTextForeground(*wxBLACK);
+    wxString month = "Month: ";
+    month.Append(std::to_string(mMonth));
+    dc.DrawText(month, 640, 210);
+    
 }
 
 

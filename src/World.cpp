@@ -31,20 +31,23 @@ std::shared_ptr<MachineState> World::FindStateAt(int x, int y){
     return nullptr;
 }
 std::shared_ptr<MachineState> World:: FindStateAtFront(int x, int y, int f){
-    MachineState ms = *FindStateAt(x, y);
-    switch (ms.mFacing) {
+    if (FindStateAt(x, y) == nullptr){
+        return nullptr;
+    }
+    std::shared_ptr<MachineState> ms = FindStateAt(x, y);
+    switch (ms->mFacing) {
         case (MachineState::UP) :
-            return FindStateAt(ms.mX, ms.mY-f);
+            return FindStateAt(ms->mX, ms->mY-f);
             break;
         case (MachineState::LEFT) :
-            return FindStateAt(ms.mX-f, ms.mY);
+            return FindStateAt(ms->mX-f, ms->mY);
             break;
         case (MachineState::RIGHT) :
-            return FindStateAt(ms.mX+f, ms.mY);
+            return FindStateAt(ms->mX+f, ms->mY);
             break;
         default:
         case (MachineState::DOWN) :
-            return FindStateAt(ms.mX, ms.mY+f);
+            return FindStateAt(ms->mX, ms->mY+f);
             break;
     }
 }

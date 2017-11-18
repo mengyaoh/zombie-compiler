@@ -107,4 +107,30 @@ struct OpTestPassable : Op
     void Execute(MachineState& state) override;
 };
 
+struct OpEndTurn : Op
+{
+     OpEndTurn()
+    : Op(L"OpEndTurn",0)
+    { }
+    
+    void Execute(MachineState& state) override;
+};
+
+struct OpAttack : Op
+{
+    OpAttack()
+    : Op(L"OpAttack",0)
+    { }
+    
+    void Execute(MachineState& state) override;
+};
+
+struct OpRangeAttack : Op
+{
+    OpRangeAttack()
+    : Op(L"OpRangeAttack",0)
+    { }
+    
+    void Execute(MachineState& state) override;
+};
 

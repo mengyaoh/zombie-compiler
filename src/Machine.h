@@ -70,6 +70,10 @@ public:
 
 	// Take a turn using this logic for the passed in state
 	void TakeTurn(MachineState& state);
+    
+    void ClearLoad(){
+        mOps.clear();
+    }
 
 
 	const std::string& GetName() const { return mName; }
@@ -113,8 +117,8 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
                 param = std::stoi(op.substr(commaIndex + 1));
                 op.erase(commaIndex, op.length() - commaIndex);
             }
-            //op.erase(std::remove_if(op.begin(), op.end(), isspace), op.end());
-            //std::cout<<op<<param<<comment<<"\n";
+            op.erase(std::remove_if(op.begin(), op.end(), isspace), op.end());
+            std::cout<<op<<param<<comment<<"\n";
             if(op == "goto" ){
                  mOps.push_back(std::make_unique<OpGoto>(param));
             }
@@ -134,6 +138,24 @@ void Machine<MachineTraits>::LoadMachine(const std::string& filename)
             else if( op == "test_random"){
                 mOps.push_back(std::make_unique<OpTestRandom>());
             }
+            else if( op == "test_zombie"){
+                mOps.push_back(std::make_unique<OpTestZombie>(param));
+            }
+            else if( op == "test_human"){
+                mOps.push_back(std::make_unique<OpTestHuman>(param));
+            }
+            else if( op == "test_passable"){
+                mOps.push_back(std::make_unique<OpTestPassable>());
+            }
+            else if( op == "endturn"){
+                mOps.push_back(std::make_unique<OpEndTurn>());
+            }
+            else if( op == "attack"){
+                mOps.push_back(std::make_unique<OpAttack>());
+            }
+            else if( op == "ranged_attack"){
+                mOps.push_back(std::make_unique<OpRangeAttack>());
+            }
         }
     }
     
@@ -145,6 +167,7 @@ void Machine<MachineTraits>::BindState(MachineState& state)
 {
 	state.mActionsPerTurn = MachineTraits::ACTIONS_PER_TURN;
 	state.mInfectOnAttack = MachineTraits::INFECT_ON_ATTACK;
+    state.mProgramCounter = 1;
 }
 
 template <typename MachineTraits>
@@ -157,9 +180,18 @@ void Machine<MachineTraits>::TakeTurn(MachineState& state)
 	{
         //std::cout<<state.mProgramCounter<<"\n";
         try{
+            if(mOps.size()==0){
+                throw MachineLoadException();
+            }
+            else if(mOps.size()!=0 && (state.mProgramCounter - 1<0||state.mProgramCounter - 1>= mOps.size())){
+                throw InvalidOp();
+            }
             mOps.at(state.mProgramCounter - 1)->Execute(state);
-        }catch(const std::out_of_range& oor){
-            wxMessageBox("Please Load Machine for both Human and Zombie", "Error", wxOK | wxICON_ERROR);
+        }catch(MachineLoadException ex){
+            wxMessageBox("please Load Machine for both Human & Zombie.", "Error", wxOK | wxICON_ERROR);
+            exit(-1);
+        }catch (InvalidOp ex){
+            wxMessageBox("Invalid OP code or parameters.", "Error", wxOK | wxICON_ERROR);
             exit(-1);
         }
 	}

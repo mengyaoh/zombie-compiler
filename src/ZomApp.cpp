@@ -3,7 +3,7 @@
 
 bool ZomApp::OnInit()
 {
-	mFrame = new ZomFrame( "Zombie Apocalypse Simulator", wxPoint(50, 50), wxSize(800, 730) );
+	mFrame = new ZomFrame( "Zombie Apocalypse Simulator", wxPoint(50, 50), wxSize(800, 1000) );
 	
 	return true;
 }

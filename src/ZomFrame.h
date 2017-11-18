@@ -18,6 +18,7 @@ private:
     void OnLoadZombie(wxCommandEvent& event);
     void OnLoadSurvivor(wxCommandEvent& event);
     void OnRandomize(wxCommandEvent& event);
+    void OnReset(wxCommandEvent& event);
 	wxDECLARE_EVENT_TABLE(); //NOLINT
 private:
 	// Panel for drawing
@@ -31,11 +32,12 @@ private:
 	
 	// TEMP CODE TEST MACHINES
 	MachineState mZombieTestState;
-	Machine<ZombieTraits> mZombieMachine;
-    Machine<HumanTraits> mHumanMachine;
 	// END TEMP CODE
     
     //World mWorld;
 	
 	bool mIsActive;
+    bool mloadedzombie;
+    bool mloadedhuman;
+    
 };

@@ -15,10 +15,12 @@ protected:
 	void PaintEvent(wxPaintEvent & evt);
 	void Render(wxDC& dc);
 	void DrawGrid(wxDC& dc);
-
+    void DrawMessage (wxDC& dc);
 	DECLARE_EVENT_TABLE()
 	
 public:
-	// Add variables here
+    int mMonth;
+    std::string mZombieMachine;
+    std::string mhumanMachine;
 };
 
